@@ -171,12 +171,42 @@ def translate_text(text, source_lang='korean', target_lang='English', translator
 
 
 def init_ocr_system():
+
+    from paddleocr import PaddleOCR
     parser = utility.init_args()
     args = parser.parse_args(args=[])
+
+    def has_inference_files(model_dir):
+        return (
+            model_dir
+            and os.path.isdir(model_dir)
+            and os.path.exists(os.path.join(model_dir, "inference.pdmodel"))
+            and os.path.exists(os.path.join(model_dir, "inference.pdiparams"))
+        )
+
+    def resolve_det_model_dir():
+        custom_det_model_dir = os.getenv("DET_MODEL_DIR")
+        default_det_cache_dir = os.path.join(
+            os.path.expanduser("~"), ".paddleocr", "whl", "det", "en", "en_PP-OCRv3_det_infer"
+        )
+
+        candidate_paths = [
+            custom_det_model_dir,
+            default_det_cache_dir,
+        ]
+
+        for candidate in candidate_paths:
+            if has_inference_files(candidate):
+                return candidate
+
+        raise ValueError(
+            "Detector model not found. Set DET_MODEL_DIR to a detector inference model directory "
+            "(must contain inference.pdmodel and inference.pdiparams), or ensure the default "
+            f"cache path exists: {default_det_cache_dir}"
+        )
     
     # DETECTOR
-    default_det_path = os.path.join(os.path.expanduser("~"), ".paddleocr", "whl", "det", "en", "en_PP-OCRv3_det_infer")
-    args.det_model_dir = default_det_path 
+    args.det_model_dir = resolve_det_model_dir()
     args.det_algorithm = 'DB'
     args.use_gpu = False
     args.det_limit_side_len = 15000
