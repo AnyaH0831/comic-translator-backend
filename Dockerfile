@@ -15,8 +15,14 @@ WORKDIR /app
 
 # Copy and install requirements
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
+RUN apt-get update && apt-get install -y \
+    libgl1 \
+    libglx-mesa0 \
+    libglib2.0-0 \
+    libgomp1 \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 # Copy the rest of your code
 COPY . .
 
