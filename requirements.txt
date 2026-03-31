@@ -71,4 +71,4 @@ python-dotenv==1.0.1
 groq==0.18.0
 azure-ai-translation-text==1.0.0b1
 azure-core==1.32.0
-paddle-serving-client==0.10.1
+paddle-serving-client
