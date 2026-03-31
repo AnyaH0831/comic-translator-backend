@@ -441,3 +441,7 @@ async def translate(request: TranslateRequest):
         traceback.print_exc()
         return {"error": str(e)}, 500
 
+@app.post("/")
+async def translate_root(request: TranslateRequest):
+    return await translate(request)
+
