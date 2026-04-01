@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import base64, io, os
 from PIL import Image
 import cv2
@@ -439,7 +440,7 @@ async def translate(request: TranslateRequest):
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return {"error": str(e)}, 500
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.post("/")
 async def translate_root(request: TranslateRequest):
